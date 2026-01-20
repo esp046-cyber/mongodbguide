@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Beginner's Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #001E2B;
+            color: #FFFFFF;
+            padding: 1%;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 1.1rem;
+            color: #00ED64;
+            margin-bottom: 1%;
+            font-weight: 600;
+        }
+        
+        .section {
+            background: #023430;
+            border-left: 3px solid #00ED64;
+            padding: 3%;
+            margin-bottom: 2%;
+            border-radius: 4px;
+        }
+        
+        .section h2 {
+            font-size: 0.95rem;
+            color: #00ED64;
+            margin-bottom: 2%;
+        }
+        
+        .section p {
+            font-size: 0.85rem;
+            margin-bottom: 2%;
+            color: #C1C7CD;
+        }
+        
+        .code-block {
+            background: #001E2B;
+            border: 1px solid #00684A;
+            padding: 2%;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            margin: 2% 0;
+            color: #00ED64;
+        }
+        
+        .step {
+            background: #002D3B;
+            padding: 2%;
+            margin: 2% 0;
+            border-radius: 4px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #00ED64;
+            color: #001E2B;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            margin-right: 2%;
+            font-size: 0.8rem;
+        }
+        
+        ul {
+            margin-left: 5%;
+            font-size: 0.85rem;
+            color: #C1C7CD;
+        }
+        
+        li {
+            margin-bottom: 1%;
+        }
+        
+        .highlight {
+            color: #00ED64;
+            font-weight: 600;
+        }
+        
+        .nav {
+            position: sticky;
+            top: 0;
+            background: #001E2B;
+            padding: 2% 0;
+            border-bottom: 2px solid #00ED64;
+            margin-bottom: 2%;
+            z-index: 100;
+        }
+        
+        .nav button {
+            background: #00684A;
+            color: #FFFFFF;
+            border: none;
+            padding: 2% 4%;
+            margin-right: 2%;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .nav button:active {
+            background: #00ED64;
+            color: #001E2B;
+        }
+        
+        .example-btn {
+            background: #002D3B;
+            color: #00ED64;
+            border: 1px solid #00684A;
+            padding: 2% 3%;
+            margin: 1% 1% 1% 0;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        
+        .example-btn:active {
+            background: #00684A;
+        }
+        
+        .pattern-content {
+            display: none;
+        }
+        
+        .pattern-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <button onclick="scrollToSection('playground')">Playground</button>
+            <button onclick="scrollToSection('basics')">Basics</button>
+            <button onclick="scrollToSection('modeling')">Modeling</button>
+            <button onclick="scrollToSection('aggregation')">Aggregation</button>
+            <button onclick="scrollToSection('indexes')">Indexes</button>
+            <button onclick="scrollToSection('setup')">Setup</button>
+            <button onclick="scrollToSection('crud')">CRUD</button>
+            <button onclick="scrollToSection('queries')">Queries</button>
+        </div>
+        
+        <h1>MongoDB Beginner's Guide 2026</h1>
+        
+        <div id="playground" class="section">
+            <h2>🚀 Interactive Playground</h2>
+            <p>Test MongoDB queries instantly with sample data. Try the examples or write your own!</p>
+            
+            <div style="margin: 3% 0;">
+                <label style="display: block; margin-bottom: 1%; color: #00ED64; font-size: 0.85rem;">Quick Examples:</label>
+                <button class="example-btn" onclick="loadExample(1)">Find All</button>
+                <button class="example-btn" onclick="loadExample(2)">Filter by Age</button>
+                <button class="example-btn" onclick="loadExample(3)">Insert New</button>
+                <button class="example-btn" onclick="loadExample(4)">Update User</button>
+                <button class="example-btn" onclick="loadExample(5)">Sort & Limit</button>
+            </div>
+            
+            <textarea id="queryInput" placeholder="Enter MongoDB query here...
+Example: db.users.find({age: {$gt: 25}})" style="width: 100%; height: 120px; background: #001E2B; color: #00ED64; border: 1px solid #00684A; border-radius: 4px; padding: 2%; font-family: 'Courier New', monospace; font-size: 0.8rem; resize: vertical;"></textarea>
+            
+            <button onclick="executeQuery()" style="background: #00ED64; color: #001E2B; border: none; padding: 3% 6%; margin-top: 2%; border-radius: 4px; font-weight: bold; font-size: 0.85rem; cursor: pointer; width: 100%;">▶ Run Query</button>
+            
+            <div id="output" style="margin-top: 3%; background: #001E2B; border: 1px solid #00684A; border-radius: 4px; padding: 3%; min-height: 100px; max-height: 300px; overflow-y: auto;">
+                <div style="color: #C1C7CD; font-size: 0.8rem;">Results will appear here...</div>
+            </div>
+            
+            <div style="margin-top: 3%; padding: 2%; background: #002D3B; border-radius: 4px;">
+                <strong style="color: #00ED64; font-size: 0.85rem;">Sample Database:</strong>
+                <div style="color: #C1C7CD; font-size: 0.75rem; margin-top: 1%;">Collection: <span style="color: #00ED64;">users</span> (5 documents loaded)</div>
+            </div>
+        </div>
+        
+        <div id="modeling" class="section">
+            <h2>📊 Data Modeling Patterns</h2>
+            <p>How you structure documents drastically affects performance and scalability.</p>
+            
+            <div style="margin: 3% 0;">
+                <button class="example-btn" onclick="showPattern('embed', this)" style="background: #00684A;">Embedding</button>
+                <button class="example-btn" onclick="showPattern('reference', this)">Referencing</button>
+                <button class="example-btn" onclick="showPattern('hybrid', this)">Hybrid</button>
+                <button class="example-btn" onclick="showPattern('patterns', this)">Common Patterns</button>
+            </div>
+            
+            <div id="patternDisplay">
+                <div class="pattern-content" id="embed-pattern">
+                    <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Embedding (Denormalization)</h3>
+                    <p style="font-size: 0.85rem; color: #C1C7CD;">Store related data in a single document. Best for <span class="highlight">one-to-few</span> relationships.</p>
+                    
+                    <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                        <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">✓ Use When:</div>
+                        <ul style="font-size: 0.75rem; margin-left: 4%;">
+                            <li>Data is frequently accessed together</li>
+                            <li>Relationship is one-to-few (1-100 items)</li>
+                            <li>Child data doesn't change often</li>
+                            <li>Need atomic updates</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="code-block">
+// ❌ Bad: Separate collections (relational style)
+// users collection
+{
+  _id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+}
+
+// addresses collection (requires JOIN)
+{
+  _id: 101,
+  userId: 1,
+  street: "123 Main St",
+  city: "NYC"
+}
+
+// ✅ Good: Embedded (one query!)
+{
+  _id: 1,
+  name: "Alice",
+  email: "alice@example.com",
+  address: {
+    street: "123 Main St",
+    city: "NYC",
+    zip: "10001"
+  },
+  orders: [
+    {orderId: 501, total: 99.99, date: "2026-01-15"},
+    {orderId: 502, total: 149.50, date: "2026-01-20"}
+  ]
+}
+                    </div>
+                    
+                    <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                        <strong style="color: #FFB86C; font-size: 0.8rem;">⚠ Limits:</strong>
+                        <div style="font-size: 0.75rem; color: #C1C7CD; margin-top: 1%;">Document max size: 16MB. Don't embed unbounded arrays (comments, followers, etc.)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="aggregation" class="section">
+            <h2>⚡ Aggregation Pipeline</h2>
+            <p>MongoDB's most powerful feature for complex queries. Think of it as <span class="highlight">data flowing through stages</span>.</p>
+            
+            <div style="margin: 3% 0;">
+                <button class="example-btn" onclick="showAggregation('intro', this)" style="background: #00684A;">Intro</button>
+                <button class="example-btn" onclick="showAggregation('stages', this)">Common Stages</button>
+                <button class="example-btn" onclick="showAggregation('examples', this)">Real Examples</button>
+                <button class="example-btn" onclick="showAggregation('operators', this)">Operators</button>
+            </div>
+            
+            <div id="aggregationDisplay"></div>
+        </div>
+        
+        <div id="indexes" class="section">
+            <h2>🚀 Indexes Deep Dive</h2>
+            <p>Indexes are <span class="highlight">critical for performance</span>. Without them, MongoDB scans every document.</p>
+            
+            <div style="margin: 3% 0;">
+                <button class="example-btn" onclick="showIndex('basics', this)" style="background: #00684A;">Index Basics</button>
+                <button class="example-btn" onclick="showIndex('types', this)">Index Types</button>
+                <button class="example-btn" onclick="showIndex('compound', this)">Compound Indexes</button>
+                <button class="example-btn" onclick="showIndex('performance', this)">Performance Tips</button>
+            </div>
+            
+            <div id="indexDisplay"></div>
+        </div>
+        
+        <div id="basics" class="section">
+            <h2>What is MongoDB?</h2>
+            <p>MongoDB is a <span class="highlight">NoSQL document database</span> that stores data in flexible, JSON-like documents instead of traditional rows and columns.</p>
+            <p><strong>Key Concepts:</strong></p>
+            <ul>
+                <li><span class="highlight">Database</span> - Container for collections</li>
+                <li><span class="highlight">Collection</span> - Group of documents (like a table)</li>
+                <li><span class="highlight">Document</span> - Single record (like a row, but flexible)</li>
+                <li><span class="highlight">Field</span> - Key-value pair in a document</li>
+            </ul>
+        </div>
+        
+        <div id="setup" class="section">
+            <h2>Getting Started</h2>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Create Free Account</strong>
+                <p>Visit mongodb.com/cloud/atlas → Sign up → Create free cluster (M0)</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Setup Database Access</strong>
+                <p>Security → Database Access → Add user → Save username/password</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Network Access</strong>
+                <p>Security → Network Access → Add IP (0.0.0.0/0 for testing)</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Connect</strong>
+                <p>Database → Connect → Choose connection method</p>
+            </div>
+        </div>
+        
+        <div id="crud" class="section">
+            <h2>Basic Operations (CRUD)</h2>
+            
+            <p><strong>Create (Insert)</strong></p>
+            <div class="code-block">
+db.users.insertOne({
+  name: "Alice",
+  age: 25,
+  email: "alice@example.com"
+})
+
+db.users.insertMany([
+  {name: "Bob", age: 30},
+  {name: "Charlie", age: 35}
+])
+            </div>
+            
+            <p><strong>Read (Find)</strong></p>
+            <div class="code-block">
+// Find all
+db.users.find()
+
+// Find specific
+db.users.find({name: "Alice"})
+
+// Find one
+db.users.findOne({age: 25})
+            </div>
+            
+            <p><strong>Update</strong></p>
+            <div class="code-block">
+// Update one
+db.users.updateOne(
+  {name: "Alice"},
+  {$set: {age: 26}}
+)
+
+// Update many
+db.users.updateMany(
+  {age: {$lt: 30}},
+  {$set: {status: "young"}}
+)
+            </div>
+            
+            <p><strong>Delete</strong></p>
+            <div class="code-block">
+// Delete one
+db.users.deleteOne({name: "Bob"})
+
+// Delete many
+db.users.deleteMany({age: {$gt: 40}})
+            </div>
+        </div>
+        
+        <div id="queries" class="section">
+            <h2>Common Query Operators</h2>
+            
+            <div class="code-block">
+// Comparison
+{age: {$gt: 25}}      // greater than
+{age: {$gte: 25}}     // greater/equal
+{age: {$lt: 30}}      // less than
+{age: {$lte: 30}}     // less/equal
+{age: {$ne: 25}}      // not equal
+
+// Logical
+{$and: [{age: {$gt: 20}}, {age: {$lt: 30}}]}
+{$or: [{name: "Alice"}, {name: "Bob"}]}
+
+// Array
+{tags: {$in: ["tech", "news"]}}
+{tags: {$all: ["tech", "featured"]}}
+
+// Sorting & Limiting
+db.users.find().sort({age: 1})  // 1=asc, -1=desc
+db.users.find().limit(5)
+db.users.find().skip(10)
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Use <span class="highlight">indexes</span> for frequently queried fields</li>
+                <li>Keep documents under 16MB</li>
+                <li>Use <span class="highlight">embedded documents</span> for 1-to-1 relationships</li>
+                <li>Use <span class="highlight">references</span> for 1-to-many relationships</li>
+                <li>Always validate input data</li>
+                <li>Use connection pooling in production</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>Next Steps</h2>
+            <ul>
+                <li>Practice with MongoDB Atlas UI</li>
+                <li>Learn aggregation framework</li>
+                <li>Explore MongoDB drivers (Node.js, Python, etc.)</li>
+                <li>Study schema design patterns</li>
+                <li>Review mongodb.com/docs for full documentation</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Sample database
+        let users = [
+            {_id: 1, name: "Alice", age: 25, email: "alice@example.com", city: "NYC", skills: ["JavaScript", "Python"]},
+            {_id: 2, name: "Bob", age: 30, email: "bob@example.com", city: "LA", skills: ["Java", "SQL"]},
+            {_id: 3, name: "Charlie", age: 35, email: "charlie@example.com", city: "NYC", skills: ["Python", "MongoDB"]},
+            {_id: 4, name: "Diana", age: 28, email: "diana@example.com", city: "Chicago", skills: ["React", "Node.js"]},
+            {_id: 5, name: "Eve", age: 22, email: "eve@example.com", city: "LA", skills: ["HTML", "CSS", "JavaScript"]}
+        ];
+        
+        const examples = {
+            1: "db.users.find()",
+            2: "db.users.find({age: {$gt: 25}})",
+            3: 'db.users.insertOne({name: "Frank", age: 27, email: "frank@example.com", city: "Boston", skills: ["Go"]})',
+            4: 'db.users.updateOne({name: "Alice"}, {$set: {age: 26}})',
+            5: "db.users.find().sort({age: -1}).limit(3)"
+        };
+        
+        // Show initial pattern
+        window.addEventListener('DOMContentLoaded', () => {
+            showPattern('embed');
+            showAggregation('intro');
+            showIndex('basics');
+        });
+        
+        function showPattern(type, button) {
+            // Hide all patterns
+            document.querySelectorAll('.pattern-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Reset button styles
+            document.querySelectorAll('#modeling .example-btn').forEach(btn => {
+                btn.style.background = '#002D3B';
+            });
+            
+            // Show selected pattern
+            const patternMap = {
+                'embed': createEmbedPattern,
+                'reference': createReferencePattern,
+                'hybrid': createHybridPattern,
+                'patterns': createCommonPatterns
+            };
+            
+            const display = document.getElementById('patternDisplay');
+            display.innerHTML = '';
+            const content = patternMap[type]();
+            content.classList.add('active');
+            display.appendChild(content);
+            
+            // Highlight active button
+            if (button) {
+                button.style.background = '#00684A';
+            }
+        }
+        
+        function createEmbedPattern() {
+            const div = document.createElement('div');
+            div.className = 'pattern-content';
+            div.id = 'embed-pattern';
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Embedding (Denormalization)</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Store related data in a single document. Best for <span class="highlight">one-to-few</span> relationships.</p>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">✓ Use When:</div>
+                    <ul style="font-size: 0.75rem; margin-left: 4%;">
+                        <li>Data is frequently accessed together</li>
+                        <li>Relationship is one-to-few (1-100 items)</li>
+                        <li>Child data doesn't change often</li>
+                        <li>Need atomic updates</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">// ❌ Bad: Separate collections
+// users collection
+{
+  _id: 1,
+  name: "Alice"
+}
+
+// addresses collection (requires JOIN)
+{
+  _id: 101,
+  userId: 1,
+  street: "123 Main St"
+}
+
+// ✅ Good: Embedded (one query!)
+{
+  _id: 1,
+  name: "Alice",
+  email: "alice@example.com",
+  address: {
+    street: "123 Main St",
+    city: "NYC",
+    zip: "10001"
+  },
+  recentOrders: [
+    {orderId: 501, total: 99.99},
+    {orderId: 502, total: 149.50}
+  ]
+}</div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #FFB86C; font-size: 0.8rem;">⚠ Limits:</strong>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; margin-top: 1%;">Max 16MB per document. Don't embed unbounded arrays (all comments, all followers)</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        // ========== AGGREGATION FUNCTIONS ==========
+        function showAggregation(type, button) {
+            document.querySelectorAll('#aggregation .example-btn').forEach(btn => {
+                btn.style.background = '#002D3B';
+            });
+            
+            const aggMap = {
+                'intro': createAggIntro,
+                'stages': createAggStages,
+                'examples': createAggExamples,
+                'operators': createAggOperators
+            };
+            
+            const display = document.getElementById('aggregationDisplay');
+            display.innerHTML = '';
+            const content = aggMap[type]();
+            display.appendChild(content);
+            
+            if (button) button.style.background = '#00684A';
+        }
+        
+        function createAggIntro() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">What is Aggregation?</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Pipeline of stages that transform documents. Each stage passes results to the next.</p>
+                
+                <div class="code-block">// Simple query (limited)
+db.orders.find({status: "completed"})
+
+// Aggregation (powerful!)
+db.orders.aggregate([
+  {$match: {status: "completed"}},      // Stage 1: Filter
+  {$group: {                             // Stage 2: Group
+    _id: "$customerId",
+    totalSpent: {$sum: "$amount"}
+  }},
+  {$sort: {totalSpent: -1}},            // Stage 3: Sort
+  {$limit: 10}                          // Stage 4: Top 10
+])
+
+// Output: Top 10 customers by spending
+[
+  {_id: "cust_123", totalSpent: 5420},
+  {_id: "cust_456", totalSpent: 3210},
+  ...
+]</div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">Pipeline Flow:</div>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; font-family: monospace;">
+                        All Docs → $match → $group → $sort → $limit → Final Result
+                    </div>
+                </div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Why Use It?</strong>
+                    <ul style="font-size: 0.75rem; margin-left: 4%; margin-top: 1%;">
+                        <li>Analytics & reporting</li>
+                        <li>Data transformations</li>
+                        <li>Complex calculations</li>
+                        <li>Multi-collection joins</li>
+                    </ul>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createAggStages() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Common Pipeline Stages</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$match</strong> - Filter documents (use first!)
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$match: {age: {$gte: 18}, city: "NYC"}}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$group</strong> - Group by field & calculate
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$group: {
+  _id: "$category",
+  count: {$sum: 1},
+  avgPrice: {$avg: "$price"},
+  maxPrice: {$max: "$price"}
+}}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$project</strong> - Shape output (select fields)
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$project: {
+  name: 1,
+  email: 1,
+  fullName: {$concat: ["$firstName", " ", "$lastName"]},
+  _id: 0
+}}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$sort</strong> - Order results
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$sort: {createdAt: -1}}  // -1 = descending</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$limit & $skip</strong> - Pagination
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$skip: 20}   // Skip first 20
+{$limit: 10}  // Take next 10</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">$lookup</strong> - Join collections
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">{$lookup: {
+  from: "orders",
+  localField: "_id",
+  foreignField: "customerId",
+  as: "customerOrders"
+}}</div>
+                </div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #FFB86C; font-size: 0.8rem;">⚡ Performance Tip:</strong>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; margin-top: 1%;">Always put $match early to filter before processing!</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createAggExamples() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Real-World Examples</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Example 1: Sales Report by Category</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">db.sales.aggregate([
+  {$match: {
+    date: {$gte: new Date("2026-01-01")}
+  }},
+  {$group: {
+    _id: "$category",
+    totalRevenue: {$sum: "$amount"},
+    orderCount: {$sum: 1},
+    avgOrder: {$avg: "$amount"}
+  }},
+  {$sort: {totalRevenue: -1}},
+  {$project: {
+    category: "$_id",
+    totalRevenue: 1,
+    orderCount: 1,
+    avgOrder: {$round: ["$avgOrder", 2]},
+    _id: 0
+  }}
+])</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Example 2: User Activity Last 30 Days</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">db.events.aggregate([
+  {$match: {
+    timestamp: {$gte: new Date(Date.now() - 30*24*60*60*1000)}
+  }},
+  {$group: {
+    _id: {
+      userId: "$userId",
+      date: {$dateToString: {format: "%Y-%m-%d", date: "$timestamp"}}
+    },
+    actions: {$sum: 1}
+  }},
+  {$group: {
+    _id: "$_id.userId",
+    totalActions: {$sum: "$actions"},
+    activeDays: {$sum: 1}
+  }},
+  {$match: {activeDays: {$gte: 10}}},
+  {$sort: {totalActions: -1}}
+])</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Example 3: Products with Reviews</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">db.products.aggregate([
+  {$lookup: {
+    from: "reviews",
+    localField: "_id",
+    foreignField: "productId",
+    as: "reviews"
+  }},
+  {$addFields: {
+    reviewCount: {$size: "$reviews"},
+    avgRating: {$avg: "$reviews.rating"}
+  }},
+  {$match: {reviewCount: {$gte: 5}}},
+  {$project: {
+    name: 1,
+    price: 1,
+    reviewCount: 1,
+    avgRating: {$round: ["$avgRating", 1]}
+  }},
+  {$sort: {avgRating: -1}}
+])</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createAggOperators() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Essential Operators</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Accumulator Operators (in $group)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">$sum: {$sum: 1}           // Count
+$sum: {$sum: "$amount"}   // Total
+$avg: {$avg: "$price"}    // Average
+$min: {$min: "$age"}      // Minimum
+$max: {$max: "$score"}    // Maximum
+$first: {$first: "$name"} // First value
+$last: {$last: "$date"}   // Last value
+$push: {$push: "$item"}   // Array of all values</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">String Operators</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">$concat: {$concat: ["$first", " ", "$last"]}
+$toUpper: {$toUpper: "$name"}
+$toLower: {$toLower: "$email"}
+$substr: {$substr: ["$phone", 0, 3]}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Date Operators</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">$year: {$year: "$createdAt"}
+$month: {$month: "$date"}
+$dayOfWeek: {$dayOfWeek: "$timestamp"}
+$dateToString: {$dateToString: {
+  format: "%Y-%m-%d",
+  date: "$createdAt"
+}}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Conditional Operators</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">$cond: {$cond: {
+  if: {$gte: ["$age", 18]},
+  then: "adult",
+  else: "minor"
+}}
+
+$switch: {$switch: {
+  branches: [
+    {case: {$lt: ["$score", 60]}, then: "F"},
+    {case: {$lt: ["$score", 70]}, then: "D"},
+    {case: {$lt: ["$score", 80]}, then: "C"}
+  ],
+  default: "A"
+}}</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        // ========== INDEX FUNCTIONS ==========
+        function showIndex(type, button) {
+            document.querySelectorAll('#indexes .example-btn').forEach(btn => {
+                btn.style.background = '#002D3B';
+            });
+            
+            const indexMap = {
+                'basics': createIndexBasics,
+                'types': createIndexTypes,
+                'compound': createIndexCompound,
+                'performance': createIndexPerformance
+            };
+            
+            const display = document.getElementById('indexDisplay');
+            display.innerHTML = '';
+            const content = indexMap[type]();
+            display.appendChild(content);
+            
+            if (button) button.style.background = '#00684A';
+        }
+        
+        function createIndexBasics() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Why Indexes Matter</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Without indexes, MongoDB scans <span class="highlight">every document</span>. With indexes, it jumps directly to matches.</p>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #FF6B6B; font-size: 0.75rem; margin-bottom: 1%;">❌ Without Index (Collection Scan):</div>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; font-family: monospace;">
+                        Check doc 1 → Check doc 2 → ... → Check doc 1,000,000<br>
+                        Time: 500ms for 1M documents
+                    </div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">✓ With Index (Index Scan):</div>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; font-family: monospace;">
+                        Jump to exact location in sorted index<br>
+                        Time: 2ms for 1M documents (250x faster!)
+                    </div>
+                </div>
+                
+                <div class="code-block">// Create single field index
+db.users.createIndex({email: 1})  // 1 = ascending
+
+// Create unique index (no duplicates)
+db.users.createIndex({email: 1}, {unique: true})
+
+// Query now uses index automatically
+db.users.find({email: "alice@example.com"})
+// Execution time: 2ms instead of 500ms
+
+// List all indexes
+db.users.getIndexes()
+
+// Drop index
+db.users.dropIndex("email_1")</div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Default Index:</strong>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; margin-top: 1%;">Every collection has index on _id automatically</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createIndexTypes() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Index Types</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">1. Single Field Index</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.users.createIndex({age: 1})
+// Good for: {age: 25} or {age: {$gt: 18}}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">2. Compound Index (Multiple Fields)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.users.createIndex({city: 1, age: -1})
+// Good for:
+// {city: "NYC"}
+// {city: "NYC", age: {$gte: 25}}
+// ⚠ NOT for: {age: 25} alone (must include city)</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">3. Multikey Index (Arrays)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.products.createIndex({tags: 1})
+// Good for: {tags: "electronics"}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">4. Text Index (Full-Text Search)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.posts.createIndex({title: "text", content: "text"})
+// Search:
+db.posts.find({$text: {$search: "mongodb tutorial"}})</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">5. Geospatial Index (2dsphere)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.places.createIndex({location: "2dsphere"})
+// Find nearby:
+db.places.find({
+  location: {
+    $near: {
+      $geometry: {type: "Point", coordinates: [-73.9, 40.7]},
+      $maxDistance: 1000
+    }
+  }
+})</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">6. TTL Index (Auto-Delete)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.sessions.createIndex(
+  {createdAt: 1},
+  {expireAfterSeconds: 3600}  // Delete after 1 hour
+)</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createIndexCompound() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Compound Index Strategy</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Order matters! Follow <span class="highlight">ESR Rule: Equality, Sort, Range</span></p>
+                
+                <div class="code-block">// ❌ Bad Order
+db.orders.createIndex({createdAt: -1, status: 1, customerId: 1})
+
+// Query: {status: "completed", customerId: "xyz"}
+// Problem: createdAt is first but not in query!
+
+// ✅ Good Order (ESR Rule)
+db.orders.createIndex({
+  status: 1,        // E = Equality filter
+  createdAt: -1,    // S = Sort field
+  customerId: 1     // R = Range (if needed)
+})
+
+// Perfect for:
+db.orders.find({status: "completed"}).sort({createdAt: -1})</div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">Prefix Rule:</div>
+                    <div style="font-size: 0.75rem; color: #C1C7CD;">Index {a: 1, b: 1, c: 1} supports:</div>
+                    <ul style="font-size: 0.75rem; margin-left: 4%; margin-top: 1%;">
+                        <li>✓ {a: x}</li>
+                        <li>✓ {a: x, b: y}</li>
+                        <li>✓ {a: x, b: y, c: z}</li>
+                        <li>❌ {b: y} - must include 'a'</li>
+                        <li>❌ {c: z} - must include 'a'</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">// Real Example: E-commerce
+db.products.createIndex({
+  category: 1,      // E: equality filter
+  price: 1,         // R: range queries
+  createdAt: -1     // S: sort by newest
+})
+
+// Supports all these efficiently:
+db.products.find({category: "electronics"})
+db.products.find({category: "electronics", price: {$lt: 500}})
+db.products.find({category: "electronics"}).sort({createdAt: -1})</div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #FFB86C; font-size: 0.8rem;">⚠ Trade-offs:</strong>
+                    <ul style="font-size: 0.75rem; margin-left: 4%; margin-top: 1%;">
+                        <li>Each index slows writes (insert/update/delete)</li>
+                        <li>Indexes use RAM and disk space</li>
+                        <li>Aim for 5-10 indexes per collection max</li>
+                    </ul>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createIndexPerformance() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Performance Optimization</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Check if Index is Used</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.users.find({email: "alice@example.com"}).explain("executionStats")
+
+// Look for:
+// "stage": "IXSCAN"  ✓ Using index
+// "stage": "COLLSCAN"  ❌ Full collection scan</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Covered Queries (Fastest)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">// Index contains all queried fields
+db.users.createIndex({email: 1, name: 1})
+
+// Query only indexed fields (no document fetch!)
+db.users.find(
+  {email: "alice@example.com"},
+  {email: 1, name: 1, _id: 0}  // Project only indexed fields
+)
+// Stage: "IXSCAN", "totalDocsExamined": 0 ⚡</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Index Selectivity</strong>
+                    <p style="font-size: 0.75rem; color: #C1C7CD; margin: 1% 0;">Index fields with high cardinality (many unique values)</p>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">// ✓ Good: High cardinality
+email: "alice@..."      // 1M unique values
+userId: "user_123"      // 1M unique values
+
+// ❌ Bad: Low cardinality
+gender: "F"             // Only 3 values
+isActive: true          // Only 2 values</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Index Hints (Force Index Use)</strong>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.75rem;">db.users.find({...}).hint({email: 1})</div>
+                </div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Best Practices:</strong>
+                    <ul style="font-size: 0.75rem; margin-left: 4%; margin-top: 1%;">
+                        <li>Create indexes for frequent queries</li>
+                        <li>Use compound indexes for multi-field queries</li>
+                        <li>Monitor with .explain() regularly</li>
+                        <li>Build indexes in background for production</li>
+                        <li>Remove unused indexes (check logs)</li>
+                        <li>Index fields used in: filters, sorts, joins</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">// Background index (non-blocking)
+db.users.createIndex({email: 1}, {background: true})</div>
+            `;
+            return div;
+        }
+        
+        function createReferencePattern() {
+            const div = document.createElement('div');
+            div.className = 'pattern-content';
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Referencing (Normalization)</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Store references to other documents. Best for <span class="highlight">one-to-many</span> or <span class="highlight">many-to-many</span>.</p>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">✓ Use When:</div>
+                    <ul style="font-size: 0.75rem; margin-left: 4%;">
+                        <li>Relationship is one-to-many (100+ items)</li>
+                        <li>Data is accessed independently</li>
+                        <li>Child data changes frequently</li>
+                        <li>Need to avoid duplication</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">// users collection
+{
+  _id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+}
+
+// posts collection (separate)
+{
+  _id: 201,
+  authorId: 1,  // ← Reference
+  title: "MongoDB Tips",
+  content: "...",
+  createdAt: "2026-01-20"
+}
+
+// Query: Get user's posts
+db.posts.find({authorId: 1})
+
+// With $lookup (like SQL JOIN)
+db.users.aggregate([
+  {$match: {_id: 1}},
+  {$lookup: {
+    from: "posts",
+    localField: "_id",
+    foreignField: "authorId",
+    as: "posts"
+  }}
+])</div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #FFB86C; font-size: 0.8rem;">⚠ Trade-off:</strong>
+                    <div style="font-size: 0.75rem; color: #C1C7CD; margin-top: 1%;">Requires multiple queries or $lookup. Slower than embedding but more flexible.</div>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createHybridPattern() {
+            const div = document.createElement('div');
+            div.className = 'pattern-content';
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Hybrid Approach</h3>
+                <p style="font-size: 0.85rem; color: #C1C7CD;">Combine embedding + referencing for optimal performance. <span class="highlight">Most real apps use this.</span></p>
+                
+                <div class="code-block">// Blog Post Example
+{
+  _id: 301,
+  title: "Advanced MongoDB",
+  content: "Full article text...",
+  
+  // Embedded: Small, frequently accessed
+  author: {
+    _id: 1,
+    name: "Alice",      // Denormalized
+    avatar: "url..."
+  },
+  
+  // Embedded: Recent/important only
+  recentComments: [
+    {userId: 2, text: "Great!", date: "2026-01-20"},
+    {userId: 3, text: "Thanks!", date: "2026-01-19"}
+  ],
+  
+  // Referenced: Full list
+  totalComments: 547,
+  commentsRef: "comments_301",  // ← Separate collection
+  
+  tags: ["mongodb", "database"]  // Embedded array
+}
+
+// comments_301 collection (when needed)
+{
+  postId: 301,
+  comments: [/* all 547 comments */]
+}</div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 1%;">Best of Both:</div>
+                    <ul style="font-size: 0.75rem; margin-left: 4%;">
+                        <li>Embed what you access together (author info)</li>
+                        <li>Reference what's large/unbounded (all comments)</li>
+                        <li>Cache frequently used data (recent comments)</li>
+                        <li>Denormalize for read performance</li>
+                    </ul>
+                </div>
+            `;
+            return div;
+        }
+        
+        function createCommonPatterns() {
+            const div = document.createElement('div');
+            div.className = 'pattern-content';
+            div.innerHTML = `
+                <h3 style="color: #00ED64; font-size: 0.9rem; margin-bottom: 2%;">Design Patterns Cheat Sheet</h3>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">1. Subset Pattern</strong>
+                    <p style="font-size: 0.75rem; color: #C1C7CD; margin: 1% 0;">Store only most recent/relevant items in document</p>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">{
+  product: "Laptop",
+  reviews: [/* last 10 only */],
+  totalReviews: 1247,
+  allReviewsRef: "reviews_abc"
+}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">2. Bucket Pattern</strong>
+                    <p style="font-size: 0.75rem; color: #C1C7CD; margin: 1% 0;">Group time-series data into buckets</p>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">{
+  sensorId: "temp_01",
+  date: "2026-01-20",
+  readings: [
+    {time: "00:00", temp: 72},
+    {time: "00:15", temp: 71.8},
+    // ... up to 96 readings/day
+  ]
+}</div>
+                </div>
+                
+                <div style="background: #001E2B; padding: 2%; border-radius: 4px; margin: 2% 0;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">3. Extended Reference</strong>
+                    <p style="font-size: 0.75rem; color: #C1C7CD; margin: 1% 0;">Store ID + frequently accessed fields</p>
+                    <div class="code-block" style="margin-top: 1%; font-size: 0.7rem;">{
+  orderId: 501,
+  customer: {
+    _id: 1,
+    name: "Alice",     // Duplicated
+    email: "alice@..."  // for quick access
+  }
+  // Full customer in users collection
+}</div>
+                </div>
+                
+                <div style="background: #002D3B; padding: 2%; border-radius: 4px; margin-top: 2%;">
+                    <strong style="color: #00ED64; font-size: 0.8rem;">Decision Tree:</strong>
+                    <ul style="font-size: 0.75rem; margin-left: 4%; margin-top: 1%;">
+                        <li>1-10 items? → Embed</li>
+                        <li>10-100 items? → Embed or Hybrid</li>
+                        <li>100-1000+ items? → Reference</li>
+                        <li>Unbounded? → Reference + Subset</li>
+                    </ul>
+                </div>
+            `;
+            return div;
+        }
+        
+        function loadExample(num) {
+            document.getElementById('queryInput').value = examples[num];
+        }
+        
+        function executeQuery() {
+            const query = document.getElementById('queryInput').value.trim();
+            const output = document.getElementById('output');
+            
+            if (!query) {
+                output.innerHTML = '<div style="color: #FF6B6B; font-size: 0.8rem;">⚠ Please enter a query</div>';
+                return;
+            }
+            
+            try {
+                let result;
+                let operation = '';
+                
+                // Parse and execute query
+                if (query.includes('.find()')) {
+                    operation = 'find';
+                    result = [...users];
+                    
+                    // Handle sort
+                    if (query.includes('.sort(')) {
+                        const sortMatch = query.match(/\.sort\(\{(\w+):\s*(-?\d+)\}\)/);
+                        if (sortMatch) {
+                            const field = sortMatch[1];
+                            const order = parseInt(sortMatch[2]);
+                            result.sort((a, b) => order === 1 ? 
+                                (a[field] > b[field] ? 1 : -1) : 
+                                (a[field] < b[field] ? 1 : -1)
+                            );
+                        }
+                    }
+                    
+                    // Handle limit
+                    if (query.includes('.limit(')) {
+                        const limitMatch = query.match(/\.limit\((\d+)\)/);
+                        if (limitMatch) {
+                            result = result.slice(0, parseInt(limitMatch[1]));
+                        }
+                    }
+                    
+                } else if (query.includes('.find({')) {
+                    operation = 'find';
+                    const filterMatch = query.match(/\.find\((\{[^}]+\})\)/);
+                    if (filterMatch) {
+                        const filterStr = filterMatch[1];
+                        
+                        // Handle comparison operators
+                        if (filterStr.includes('$gt')) {
+                            const match = filterStr.match(/(\w+):\s*\{\$gt:\s*(\d+)\}/);
+                            if (match) {
+                                result = users.filter(u => u[match[1]] > parseInt(match[2]));
+                            }
+                        } else if (filterStr.includes('$lt')) {
+                            const match = filterStr.match(/(\w+):\s*\{\$lt:\s*(\d+)\}/);
+                            if (match) {
+                                result = users.filter(u => u[match[1]] < parseInt(match[2]));
+                            }
+                        } else if (filterStr.includes('$gte')) {
+                            const match = filterStr.match(/(\w+):\s*\{\$gte:\s*(\d+)\}/);
+                            if (match) {
+                                result = users.filter(u => u[match[1]] >= parseInt(match[2]));
+                            }
+                        } else {
+                            // Simple equality
+                            const match = filterStr.match(/(\w+):\s*"([^"]+)"|(\w+):\s*(\d+)/);
+                            if (match) {
+                                const field = match[1] || match[3];
+                                const value = match[2] || parseInt(match[4]);
+                                result = users.filter(u => u[field] === value);
+                            }
+                        }
+                    }
+                    
+                } else if (query.includes('.insertOne(')) {
+                    operation = 'insert';
+                    const docMatch = query.match(/\.insertOne\((\{[^}]+\})\)/);
+                    if (docMatch) {
+                        try {
+                            const doc = eval('(' + docMatch[1] + ')');
+                            doc._id = users.length + 1;
+                            users.push(doc);
+                            result = {acknowledged: true, insertedId: doc._id};
+                        } catch (e) {
+                            throw new Error('Invalid document format');
+                        }
+                    }
+                    
+                } else if (query.includes('.updateOne(')) {
+                    operation = 'update';
+                    const parts = query.match(/\.updateOne\((\{[^}]+\}),\s*(\{[^}]+\})\)/);
+                    if (parts) {
+                        const filterStr = parts[1];
+                        const updateStr = parts[2];
+                        
+                        const nameMatch = filterStr.match(/name:\s*"([^"]+)"/);
+                        if (nameMatch && updateStr.includes('$set')) {
+                            const setMatch = updateStr.match(/\$set:\s*\{(\w+):\s*(\d+)\}/);
+                            if (setMatch) {
+                                const user = users.find(u => u.name === nameMatch[1]);
+                                if (user) {
+                                    user[setMatch[1]] = parseInt(setMatch[2]);
+                                    result = {acknowledged: true, modifiedCount: 1};
+                                }
+                            }
+                        }
+                    }
+                    
+                } else {
+                    throw new Error('Unsupported operation. Try find(), insertOne(), or updateOne()');
+                }
+                
+                // Display result
+                if (operation === 'find') {
+                    if (!result || result.length === 0) {
+                        output.innerHTML = '<div style="color: #FFB86C; font-size: 0.8rem;">No documents found</div>';
+                    } else {
+                        output.innerHTML = `<div style="color: #00ED64; font-size: 0.75rem; margin-bottom: 2%;">✓ Found ${result.length} document(s)</div>` +
+                            '<pre style="color: #C1C7CD; font-size: 0.75rem; white-space: pre-wrap;">' + 
+                            JSON.stringify(result, null, 2) + '</pre>';
+                    }
+                } else {
+                    output.innerHTML = `<div style="color: #00ED64; font-size: 0.8rem;">✓ Operation successful</div>` +
+                        '<pre style="color: #C1C7CD; font-size: 0.75rem; margin-top: 2%;">' + 
+                        JSON.stringify(result, null, 2) + '</pre>';
+                }
+                
+            } catch (error) {
+                output.innerHTML = `<div style="color: #FF6B6B; font-size: 0.8rem;">⚠ Error: ${error.message}</div>` +
+                    '<div style="color: #C1C7CD; font-size: 0.75rem; margin-top: 2%;">Check your syntax and try again</div>';
+            }
+        }
+        
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    </script>
+</body>
+</html>
